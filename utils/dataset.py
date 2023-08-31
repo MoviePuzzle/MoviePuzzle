@@ -26,7 +26,7 @@ class DataAugmentationForVRM(object):
 class VideoReorderMovieNetDataFolder(torch.utils.data.Dataset):
     def __init__(
             self,
-            root: str, # = '/home/jianghui/dataset/VideoReorder-MovieNet'
+            root: str, 
             split: str,
             layer: str = '',
             transform: Optional[Callable] = None
@@ -74,7 +74,7 @@ class VideoReorderMovieNetDataFolder(torch.utils.data.Dataset):
 class NewVideoReorderMovieNetDataFolder(torch.utils.data.Dataset):
     def __init__(
             self,
-            root: str, # = '/home/jianghui/dataset/VideoReorder-MovieNet'
+            root: str, 
             split: str,
             layer: str = '',
             transform: Optional[Callable] = None
