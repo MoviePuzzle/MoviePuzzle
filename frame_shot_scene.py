@@ -251,7 +251,7 @@ cls_head.to(device)
 # wandb.watch(net)
 
 lr = 5e-5
-epoch = 4
+epoch = 1
 
 loss_func = nn.CrossEntropyLoss()
 loss_func.to(device)
@@ -314,8 +314,7 @@ for e in range(epoch):
             score_batch_scene_list = []
 
             for item_data in batch_data:        
-                text, img, img_id, shot_id, scene_id = item_data 
-                img = img.replace('/home/wangyuxuan1/', '')
+                text, img, img_id, shot_id, scene_id = item_data
                 img = torch.load(img)
                 img = img.to(device)
                 # L, _,  H = features.size() # L * 1 * 1024
