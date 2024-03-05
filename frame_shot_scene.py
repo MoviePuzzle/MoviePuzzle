@@ -25,12 +25,12 @@ data_path = 'data/movienet/VideoReorder-MovieNet'
 split = 'train'
 # train_data = VideoReorderMovieNetDataFolder(root=data_path, split=split, layer='shot')
 train_data = NewVideoReorderMovieNetDataFolder(root=data_path, split=split, layer='')
-train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=8, shuffle=(split == 'train'), num_workers=0, pin_memory=True, collate_fn=lambda x: x)
+train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=2, shuffle=(split == 'train'), num_workers=0, pin_memory=True, collate_fn=lambda x: x)
 
 split = 'val'
 # val_data = VideoReorderMovieNetDataFolder(root=data_path, split=split, layer='shot')
 val_data = NewVideoReorderMovieNetDataFolder(root=data_path, split=split, layer='')
-val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=8, shuffle=(split == 'train'), num_workers=0, pin_memory=True, collate_fn=lambda x: x)
+val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=2, shuffle=(split == 'train'), num_workers=0, pin_memory=True, collate_fn=lambda x: x)
 
 # # 1 naive net
 # net = nn.Sequential(
@@ -84,17 +84,17 @@ class CLIPVisionEmbeddings(nn.Module):
 class CLS_HEAD(nn.Module):
     def __init__(self):
         super().__init__()
-        # self.dense = nn.Linear(768*2, 768)
-        # self.activation = nn.Tanh()
-        # self.dense2 = nn.Linear(768, 512)
-        # self.activation2 = nn.ReLU()
-        # self.cls_header = nn.Linear(512, 2)
-        
-        self.dense = nn.Linear(4096*2, 4096)
+        self.dense = nn.Linear(768*2, 768)
         self.activation = nn.Tanh()
-        self.dense2 = nn.Linear(4096, 1024)
+        self.dense2 = nn.Linear(768, 512)
         self.activation2 = nn.ReLU()
-        self.cls_header = nn.Linear(1024, 2)
+        self.cls_header = nn.Linear(512, 2)
+        
+        # self.dense = nn.Linear(4096*2, 4096)
+        # self.activation = nn.Tanh()
+        # self.dense2 = nn.Linear(4096, 1024)
+        # self.activation2 = nn.ReLU()
+        # self.cls_header = nn.Linear(1024, 2)
 
     def forward(self, hidden_states: torch.Tensor, pos1=0, pos2=0) -> torch.Tensor:
         # # mean pooling
@@ -119,17 +119,17 @@ class CLS_HEAD(nn.Module):
 class CLS_SHOT_HEAD(nn.Module):
     def __init__(self):
         super().__init__()
-        # self.dense = nn.Linear(768*2, 768)
-        # self.activation = nn.Tanh()
-        # self.dense2 = nn.Linear(768, 512)
-        # self.activation2 = nn.ReLU()
-        # self.cls_header = nn.Linear(512, 2)
-        
-        self.dense = nn.Linear(4096*2, 4096)
+        self.dense = nn.Linear(768*2, 768)
         self.activation = nn.Tanh()
-        self.dense2 = nn.Linear(4096, 1024)
+        self.dense2 = nn.Linear(768, 512)
         self.activation2 = nn.ReLU()
-        self.cls_header = nn.Linear(1024, 2)
+        self.cls_header = nn.Linear(512, 2)
+        
+        # self.dense = nn.Linear(4096*2, 4096)
+        # self.activation = nn.Tanh()
+        # self.dense2 = nn.Linear(4096, 1024)
+        # self.activation2 = nn.ReLU()
+        # self.cls_header = nn.Linear(1024, 2)
 
     def forward(self, hidden_states: torch.Tensor, pos1=[0], pos2=[0]) -> torch.Tensor:
         # # mean pooling
@@ -156,17 +156,17 @@ class CLS_SHOT_HEAD(nn.Module):
 class CLUSTER_HEAD(nn.Module):
     def __init__(self):
         super().__init__()
-        # self.dense = nn.Linear(768, 768)
-        # self.activation = nn.Tanh()
-        # self.dense2 = nn.Linear(768, 512)
-        # self.activation2 = nn.ReLU()
-        # self.cluster_header = nn.Linear(512, 512)
-        
-        self.dense = nn.Linear(4096, 4096)
+        self.dense = nn.Linear(768, 768)
         self.activation = nn.Tanh()
-        self.dense2 = nn.Linear(4096, 2048)
+        self.dense2 = nn.Linear(768, 512)
         self.activation2 = nn.ReLU()
-        self.cluster_header = nn.Linear(2048, 1024)
+        self.cluster_header = nn.Linear(512, 512)
+        
+        # self.dense = nn.Linear(4096, 4096)
+        # self.activation = nn.Tanh()
+        # self.dense2 = nn.Linear(4096, 2048)
+        # self.activation2 = nn.ReLU()
+        # self.cluster_header = nn.Linear(2048, 1024)
 
     def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
         # # mean pooling
@@ -196,8 +196,8 @@ clip_embeding = nn.Sequential(
 clip_embeding.apply(init_weights)
 
 # in frame reorder
-# net = AlbertModel.from_pretrained('prev_trained_models/albert-base-v2', num_hidden_layers=1)
-net = AlbertModel.from_pretrained('prev_trained_models/albert-xxlarge-v2', num_hidden_layers=1)
+net = AlbertModel.from_pretrained('prev_trained_models/albert-base-v2', num_hidden_layers=1)
+# net = AlbertModel.from_pretrained('prev_trained_models/albert-xxlarge-v2', num_hidden_layers=1)
 # net = AlbertModel.from_pretrained('prev_trained_models/albert-xxlarge-v2')
 # for name, param in net.named_parameters():
 #     if name.startswith("bert.encoder.layer.1"): param.requires_grad = False
@@ -315,6 +315,7 @@ for e in range(epoch):
 
             for item_data in batch_data:        
                 text, img, img_id, shot_id, scene_id = item_data 
+                img = img.replace('/home/wangyuxuan1/', '')
                 img = torch.load(img)
                 img = img.to(device)
                 # L, _,  H = features.size() # L * 1 * 1024

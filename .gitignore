@@ -1,0 +1,3 @@
+data/
+*.pyc
+prev_trained_models
