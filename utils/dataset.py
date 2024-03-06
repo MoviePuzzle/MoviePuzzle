@@ -100,7 +100,7 @@ class NewVideoReorderMovieNetDataFolder(torch.utils.data.Dataset):
 
         # read data .pt file
         if self.layer == '':
-            self.data = torch.load(Path(self.root, f'{split}.pt'))
+            self.data = torch.load(Path(self.root, f'{split}_new.pt'))
         else:
             self.data = torch.load(Path(self.root, f'{split}_ori_shot.pt'))
 

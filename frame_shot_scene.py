@@ -21,7 +21,7 @@ from utils import *
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ['TOKENIZERS_PARALLELISM'] = 'true'
 
-data_path = 'data/movienet/VideoReorder-MovieNet'
+data_path = 'data'
 split = 'train'
 # train_data = VideoReorderMovieNetDataFolder(root=data_path, split=split, layer='shot')
 train_data = NewVideoReorderMovieNetDataFolder(root=data_path, split=split, layer='')
